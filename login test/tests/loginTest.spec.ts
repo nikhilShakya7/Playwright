@@ -27,7 +27,7 @@ test.describe("Login page test", () => {
 
   test.describe("Home page logout button test", () => {
     test("Logout button click", async ({}) => {
-      await loginPage.login("student", "Password");
+      await loginPage.login("student", "Password123");
       await homePage.gotoHome();
       await homePage.logout();
     });
