@@ -1,3 +1,5 @@
+//
+
 import { Page } from "@playwright/test";
 
 export default class basePage {
@@ -8,6 +10,6 @@ export default class basePage {
   }
 
   async goto(url: string) {
-    await this.goto(url);
+    this.goto(url);
   }
 }
