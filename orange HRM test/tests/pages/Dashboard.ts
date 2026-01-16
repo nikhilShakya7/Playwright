@@ -5,8 +5,7 @@ export class Dashboard extends BasePage {
   constructor(page: Page) {
     super(page);
   }
-
-  async openDashboard() {
+  async gotoDashboard() {
     await this.goto(
       "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
     );

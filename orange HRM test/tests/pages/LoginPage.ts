@@ -6,6 +6,7 @@ export class LoginPage extends BasePage {
   readonly userpassword: Locator;
   readonly loginButton: Locator;
   readonly errorMessage: Locator;
+  readonly reqMessage: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -13,8 +14,8 @@ export class LoginPage extends BasePage {
     this.userpassword = page.getByPlaceholder("Password");
     this.loginButton = page.getByRole("button", { name: "Login" });
     this.errorMessage = page.getByRole("alert");
+    this.reqMessage = page.getByText("Required");
   }
-
   async open() {
     await this.goto(
       "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
@@ -28,7 +29,7 @@ export class LoginPage extends BasePage {
   }
 
   async expError(message: string) {
-    await expect(this.errorMessage).toBeVisible;
+    await expect(this.errorMessage).toBeVisible();
     await expect(this.errorMessage).toHaveText(message);
   }
 }
