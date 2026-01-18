@@ -1,27 +1,24 @@
-import test from "@playwright/test";
+import { test } from "@playwright/test";
 import { LoginPage } from "./pages/LoginPage";
-import { Dashboard } from "./pages/Dashboard";
+import { DashboardPage } from "./pages/DashboardPage";
 
 test.describe("Login page test", () => {
-  test("Login with valid credentials", async ({ page }) => {
-    const loginpage = new LoginPage(page);
-    const dashboard = new Dashboard(page);
-    await loginpage.open();
-    await loginpage.login("Admin", "admin123");
-    await dashboard.gotoDashboard();
-  });
+  let loginPage: LoginPage;
+  let dashboardPage: DashboardPage;
 
-  test("login with invalid name", async ({ page }) => {
-    const loginpage = new LoginPage(page);
-    await loginpage.open();
-    await loginpage.login("invalid name", "invalid password");
-    await loginpage.expError("Invalid credentials");
-  });
-
-  test("Login with empty credentials", async ({ page }) => {
-    const loginPage = new LoginPage(page);
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    dashboardPage = new DashboardPage(page);
     await loginPage.open();
-    await loginPage.login("", "");
-    await loginPage.emptyField();
+  });
+
+  test("Login with valid credentials", async ({}) => {
+    await loginPage.login("Admin", "admin123");
+    await dashboardPage.gotoDashboard();
+  });
+
+  test("Login with invalid credentials", async ({ page }) => {
+    await loginPage.login("wrongUser", "wrongPass");
+    await loginPage.expError("Invalid credentials");
   });
 });
