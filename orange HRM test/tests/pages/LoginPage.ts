@@ -32,4 +32,8 @@ export class LoginPage extends BasePage {
     await expect(this.errorMessage).toBeVisible();
     await expect(this.errorMessage).toHaveText(message);
   }
+
+  async emptyField() {
+    await expect(this.reqMessage).toBeVisible();
+  }
 }

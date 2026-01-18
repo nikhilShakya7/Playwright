@@ -17,4 +17,11 @@ test.describe("Login page test", () => {
     await loginpage.login("invalid name", "invalid password");
     await loginpage.expError("Invalid credentials");
   });
+
+  test("Login with empty credentials", async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.open();
+    await loginPage.login("", "");
+    await loginPage.emptyField();
+  });
 });
