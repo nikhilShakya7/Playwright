@@ -1,13 +1,12 @@
-import { Page } from "@playwright/test";
 import BasePage from "./BasePage";
+import { Page } from "@playwright/test";
 
-export class Dashboard extends BasePage {
+export class DashboardPage extends BasePage {
   constructor(page: Page) {
     super(page);
   }
-
-  async openDashboard() {
-    await this.goto(
+  async gotoDashboard() {
+    await this.page.goto(
       "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
     );
   }

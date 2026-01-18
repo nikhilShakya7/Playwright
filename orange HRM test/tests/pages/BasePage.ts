@@ -1,11 +1,10 @@
 import { Page } from "@playwright/test";
 export default class BasePage {
   protected page: Page;
-
   constructor(page: Page) {
     this.page = page;
   }
   async goto(url: string) {
-    this.page.goto(url);
+    await this.page.goto(url);
   }
 }

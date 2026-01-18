@@ -16,7 +16,7 @@ export class LoginPage extends BasePage {
   }
 
   async open() {
-    await this.goto(
+    await this.page.goto(
       "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
     );
   }
@@ -28,7 +28,6 @@ export class LoginPage extends BasePage {
   }
 
   async expError(message: string) {
-    await expect(this.errorMessage).toBeVisible;
     await expect(this.errorMessage).toHaveText(message);
   }
 }
