@@ -1,4 +1,4 @@
-import test from "@playwright/test";
+import test, { expect } from "@playwright/test";
 import { LoginPage } from "./pages/LoginPage";
 import { Homepage } from "./pages/Homepage";
 
@@ -15,23 +15,23 @@ test.describe("Login page test", () => {
     await loginPage.login("qa_testers@qabrains.com", "Password123");
     await homePage.gotoHome();
   });
-
   test("Login with empty email", async ({ page }) => {
-    await loginPage.login("", "");
-    await loginPage.expError("Email is a required field");
+    await loginPage.login("", "Password123");
+    await expect(page.getByText("Email is a required field")).toBeVisible();
   });
-
-  //   test("Email validation test", async ({}) => {
-  //     await loginPage.login("wrong email", "Pas");
-  //     await loginPage.isValidEmail("Your email and password both are invalid!");
-  //   });
+  test("Login with empty password", async ({ page }) => {
+    await loginPage.login("qa_testers@qabrains.com", "");
+    await expect(page.getByText("Password is a required field")).toBeVisible();
+  });
 });
 
-test("Logout test", async ({ page }) => {
-  const loginpage = new LoginPage(page);
-  const homePage = new Homepage(page);
-  await loginpage.open();
-  await loginpage.login("qa_testers@qabrains.com", "Password123");
-  await homePage.gotoHome();
-  await homePage.logout();
+test.describe("logout test", () => {
+  test("Logout test", async ({ page }) => {
+    const loginpage = new LoginPage(page);
+    const homePage = new Homepage(page);
+    await loginpage.open();
+    await loginpage.login("qa_testers@qabrains.com", "Password123");
+    await homePage.gotoHome();
+    await homePage.logout();
+  });
 });
