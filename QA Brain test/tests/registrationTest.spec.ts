@@ -1,11 +1,11 @@
-import test, { expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { Registration } from "./pages/Registration";
 
 test.describe("Registration page test", () => {
   let registration: Registration;
   test.beforeEach(async ({ page }) => {
     registration = new Registration(page);
-    registration.open();
+    await registration.open();
   });
 
   test("Registration wit empty fields", async ({ page }) => {
