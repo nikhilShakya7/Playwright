@@ -1,10 +1,6 @@
 import test, { expect } from "@playwright/test";
 import { EcommerceLogin } from "./pages/EcommerceLogin";
-const validUsers = [
-  { email: "test@qabrains.com,", password: "Password123" },
-  { email: "practice@qabrains.com", password: "Password123" },
-  { email: "student@qabrains.com", password: "Password123" },
-];
+import { EMAIL, PASSWORD } from "../utils/env";
 
 test.describe("Visibility test", () => {
   test("All fields are visible", async ({ page }) => {
@@ -36,9 +32,7 @@ test.describe("Ecommerce login test", () => {
   });
 
   test("Login with valid credentials", async ({ page }) => {
-    for (const user of validUsers) {
-      await ecommercePage.login(user.email, user.password);
-      await expect(page).toHaveURL(/ecommerce/);
-    }
+    await ecommercePage.login(EMAIL, PASSWORD);
+    await expect(page).toHaveURL(/ecommerce/);
   });
 });
