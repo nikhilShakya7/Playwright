@@ -6,6 +6,16 @@ const validUsers = [
   { email: "student@qabrains.com", password: "Password123" },
 ];
 
+test.describe("Visibility test", () => {
+  test("All fields are visible", async ({ page }) => {
+    const ecommercePage = new EcommerceLogin(page);
+    await ecommercePage.open();
+    await expect(ecommercePage.loginButton).toBeVisible();
+    await expect(ecommercePage.userEmail).toBeVisible();
+    await expect(ecommercePage.userPassword).toBeVisible();
+  });
+});
+
 test.describe("Ecommerce login test", () => {
   let ecommercePage: EcommerceLogin;
   test.beforeEach(async ({ page }) => {

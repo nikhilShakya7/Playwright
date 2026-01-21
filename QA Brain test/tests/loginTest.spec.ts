@@ -2,6 +2,16 @@ import test, { expect } from "@playwright/test";
 import { LoginPage } from "./pages/LoginPage";
 import { Homepage } from "./pages/Homepage";
 
+test.describe("Visibility test", () => {
+  test("All fields are visible", async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.open();
+    await expect(loginPage.userEmail).toBeVisible();
+    await expect(loginPage.userPassword).toBeVisible();
+    await expect(loginPage.loginButton).toBeVisible();
+  });
+});
+
 test.describe("Login page test", () => {
   let loginPage: LoginPage;
   let homePage: Homepage;
