@@ -1,6 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { Registration } from "./pages/Registration";
 
+test.describe("Visibility test", () => {
+  test("all fields are visible", async ({ page }) => {
+    const registrationPage = new Registration(page);
+    await registrationPage.open();
+    await expect(registrationPage.userName).toBeVisible();
+    await expect(registrationPage.userAccount).toBeVisible();
+    await expect(registrationPage.userCountry).toBeVisible();
+    await expect(registrationPage.userEmail).toBeVisible();
+    await expect(registrationPage.userPassword).toBeVisible();
+    await expect(registrationPage.userConfirmPassword).toBeVisible();
+    await expect(registrationPage.signupButton).toBeVisible();
+  });
+});
+
 test.describe("Registration page test", () => {
   let registration: Registration;
   test.beforeEach(async ({ page }) => {
