@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { Registration } from "./pages/Registration";
+import { validCredentials } from "./data/register.data";
 
 test.describe("Visibility test", () => {
   test("all fields are visible", async ({ page }) => {
@@ -34,23 +35,23 @@ test.describe("Registration page test", () => {
 
   test("Register with valid credentials", async ({ page }) => {
     await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
-      "123456",
-      "123456"
+      validCredentials.name,
+      validCredentials.country,
+      validCredentials.account,
+      validCredentials.email,
+      validCredentials.password,
+      validCredentials.confirmPassword
     );
     await expect(page).toHaveURL(/registered=true/);
   });
 
   test("Register with unmatching passwords", async ({ page }) => {
     await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
-      "123456",
+      validCredentials.name,
+      validCredentials.country,
+      validCredentials.account,
+      validCredentials.email,
+      validCredentials.password,
       "1234456"
     );
     await expect(page.getByText("Passwords must match")).toBeVisible();
@@ -58,10 +59,10 @@ test.describe("Registration page test", () => {
 
   test("Register with password less then 6 characters", async ({ page }) => {
     await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
+      validCredentials.name,
+      validCredentials.country,
+      validCredentials.account,
+      validCredentials.email,
       "123",
       "123"
     );

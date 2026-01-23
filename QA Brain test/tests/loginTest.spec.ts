@@ -2,6 +2,7 @@ import test, { expect } from "@playwright/test";
 import { LoginPage } from "./pages/LoginPage";
 import { Homepage } from "./pages/Homepage";
 import { EMAIL, PASSWORD } from "../utils/env";
+import { invalidCredentials, validCredentials } from "./data/login.data";
 
 test.describe("Visibility test", () => {
   test("All fields are visible", async ({ page }) => {
@@ -23,11 +24,14 @@ test.describe("Login page test", () => {
   });
 
   test("Login with valid credentials", async ({ page }) => {
-    await loginPage.login("qa_testers@qabrains.com", "Password123");
+    await loginPage.login(validCredentials.email, validCredentials.password);
     await homePage.gotoHome();
   });
   test("Login with empty email", async ({ page }) => {
-    await loginPage.login("", "Password123");
+    await loginPage.login(
+      invalidCredentials.emptyEmail,
+      invalidCredentials.emptyPassword
+    );
     await expect(page.getByText("Email is a required field")).toBeVisible();
   });
   test("Login with empty password", async ({ page }) => {
