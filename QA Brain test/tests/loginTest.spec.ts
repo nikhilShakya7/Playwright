@@ -35,7 +35,7 @@ test.describe("Login page test", () => {
     await expect(page.getByText("Email is a required field")).toBeVisible();
   });
   test("Login with empty password", async ({ page }) => {
-    await loginPage.login(EMAIL, "");
+    await loginPage.login(validCredentials.email, "");
     await expect(page.getByText("Password is a required field")).toBeVisible();
   });
 });
@@ -45,7 +45,7 @@ test.describe("logout test", () => {
     const loginpage = new LoginPage(page);
     const homePage = new Homepage(page);
     await loginpage.open();
-    await loginpage.login(EMAIL, PASSWORD);
+    await loginpage.login(validCredentials.email, validCredentials.password);
     await homePage.gotoHome();
     await homePage.logout();
   });

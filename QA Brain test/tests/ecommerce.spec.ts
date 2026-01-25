@@ -1,6 +1,5 @@
 import test, { expect } from "@playwright/test";
 import { EcommerceLogin } from "./pages/EcommerceLogin";
-import { EMAIL, PASSWORD } from "../utils/env";
 import { invalidData, validData } from "./data/ecommerce.data";
 
 test.describe("Visibility test", () => {
