@@ -8,9 +8,10 @@ export class EcommerceLogin extends basePage {
 
   constructor(page: Page) {
     super(page);
-    this.userEmail = page.locator("#email");
-    this.userPassword = page.locator("#password");
-    this.loginButton = page.getByRole("button", { name: "LOGIN" });
+
+    this.userEmail = page.getByLabel("Email");
+    this.userPassword = page.getByLabel("Password");
+    this.loginButton = page.getByRole("button", { name: "Login" });
   }
 
   async open() {
