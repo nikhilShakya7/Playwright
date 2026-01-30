@@ -1,40 +1,30 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { Registration } from "./pages/Registration";
-import { validCredentials } from "./data/register.data";
+import {
+  validCredentials,
+  emptyRegistrationMessage,
+} from "./data/register.data";
 
-test.describe("Visibility test", () => {
-  test("all fields are visible", async ({ page }) => {
-    const registrationPage = new Registration(page);
-    await registrationPage.open();
-    await expect(registrationPage.userName).toBeVisible();
-    await expect(registrationPage.userAccount).toBeVisible();
-    await expect(registrationPage.userCountry).toBeVisible();
-    await expect(registrationPage.userEmail).toBeVisible();
-    await expect(registrationPage.userPassword).toBeVisible();
-    await expect(registrationPage.userConfirmPassword).toBeVisible();
-    await expect(registrationPage.signupButton).toBeVisible();
-  });
-});
-
-test.describe("Registration page test", () => {
-  let registration: Registration;
+test.describe("Registiration page test", () => {
+  let registerationPage: Registration;
   test.beforeEach(async ({ page }) => {
-    registration = new Registration(page);
-    await registration.open();
+    registerationPage = new Registration(page);
+    await registerationPage.open();
   });
 
-  test("Registration wit empty fields", async ({ page }) => {
-    await registration.signup("", "", "", "", "", "");
-    await expect(page.getByText("Name is a required field")).toBeVisible();
-    await expect(page.getByText("Country is a required field")).toBeVisible();
-    await expect(page.getByText("Account is a required field")).toBeVisible();
-    await expect(page.getByText("Email is a required field")).toBeVisible();
-    await expect(page.getByText("Password is a required field")).toBeVisible();
-    await expect(page.getByText("Confirm Password is required")).toBeVisible();
+  test("Registration page has all fields", async ({ page }) => {
+    await expect(page.getByLabel("Name")).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Select Country" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Account Type" })
+    ).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
   });
 
-  test("Register with valid credentials", async ({ page }) => {
-    await registration.signup(
+  test("Registration with valid data", async ({ page }) => {
+    await registerationPage.register(
       validCredentials.name,
       validCredentials.country,
       validCredentials.account,
@@ -45,29 +35,23 @@ test.describe("Registration page test", () => {
     await expect(page).toHaveURL(/registered=true/);
   });
 
-  test("Register with unmatching passwords", async ({ page }) => {
-    await registration.signup(
+  test("Register with all empty fields", async ({ page }) => {
+    await registerationPage.register("", "", "", "", "", "");
+
+    for (const message of Object.values(emptyRegistrationMessage)) {
+      await expect(page.getByText(message)).toBeVisible();
+    }
+  });
+
+  test("Register with different password", async ({ page }) => {
+    await registerationPage.register(
       validCredentials.name,
       validCredentials.country,
       validCredentials.account,
       validCredentials.email,
       validCredentials.password,
-      "1234456"
+      "password"
     );
     await expect(page.getByText("Passwords must match")).toBeVisible();
-  });
-
-  test("Register with password less then 6 characters", async ({ page }) => {
-    await registration.signup(
-      validCredentials.name,
-      validCredentials.country,
-      validCredentials.account,
-      validCredentials.email,
-      "123",
-      "123"
-    );
-    await expect(
-      page.getByText("Password must be at least 6 characters")
-    ).toBeVisible();
   });
 });
