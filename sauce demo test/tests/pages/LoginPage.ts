@@ -1,33 +1,25 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 import BasePage from "./BasePage";
 
 export class LoginPage extends BasePage {
-  readonly usernameInput: Locator;
-  readonly passwordInput: Locator;
-  readonly loginButton: Locator;
-  readonly errorMessage: Locator;
+  readonly username: Locator;
+  readonly userpassword: Locator;
+  readonly loginButtton: Locator;
 
   constructor(page: Page) {
     super(page);
-
-    this.usernameInput = page.locator("#user-name");
-    this.passwordInput = page.locator("#password");
-    this.loginButton = page.locator("#login-button");
-    this.errorMessage = page.locator('[data-test="error"]');
+    this.username = page.getByPlaceholder("Username");
+    this.userpassword = page.getByPlaceholder("Password");
+    this.loginButtton = page.getByRole("button", { name: "Login" });
   }
 
   async open() {
-    await this.goto("https://www.saucedemo.com/");
+    this.page.goto("https://www.saucedemo.com/");
   }
 
-  async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
-  }
-
-  async expectError(message: string) {
-    await expect(this.errorMessage).toBeVisible();
-    await expect(this.errorMessage).toHaveText(message);
+  async login(name: string, password: string) {
+    await this.username.fill(name);
+    await this.userpassword.fill(password);
+    await this.loginButtton.click();
   }
 }
