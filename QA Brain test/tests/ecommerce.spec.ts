@@ -1,34 +1,36 @@
 import test, { expect } from "@playwright/test";
 import { EcommerceLogin } from "./pages/EcommerceLogin";
-const validUsers = [
-  { email: "test@qabrains.com,", password: "Password123" },
-  { email: "practice@qabrains.com", password: "Password123" },
-  { email: "student@qabrains.com", password: "Password123" },
-];
+import { invalidData, validData } from "./data/ecommerce.data";
 
 test.describe("Ecommerce login test", () => {
-  let ecommercePage: EcommerceLogin;
+  let ecommerceLogin: EcommerceLogin;
   test.beforeEach(async ({ page }) => {
-    ecommercePage = new EcommerceLogin(page);
-    await ecommercePage.open();
+    ecommerceLogin = new EcommerceLogin(page);
+    await ecommerceLogin.open();
   });
 
-  test("Login with invalid credentials", async ({ page }) => {
-    await ecommercePage.login("wrong@gmial.com", "sldkvn");
+  test("All fields are visible", async ({ page }) => {
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+  });
+
+  for (const users of validData) {
+    test(`Login with: ${users.email}`, async ({ page }) => {
+      await ecommerceLogin.login(users.email, users.password);
+      await expect(page).toHaveURL(/ecommerce/);
+    });
+  }
+
+  test("Login with invalid password", async ({ page }) => {
+    await ecommerceLogin.login(invalidData.invalidEmail, invalidData.password);
     await expect(page.getByText("Username is incorrect.")).toBeVisible();
     await expect(page.getByText("Password is incorrect.")).toBeVisible();
   });
 
   test("Login with empty fields", async ({ page }) => {
-    await ecommercePage.login("", "");
-    await expect(page.getByText("Password is a required field")).toBeVisible();
+    await ecommerceLogin.login("", "");
     await expect(page.getByText("Email is a required field")).toBeVisible();
-  });
-
-  test("Login with valid credentials", async ({ page }) => {
-    for (const user of validUsers) {
-      await ecommercePage.login(user.email, user.password);
-      await expect(page).toHaveURL(/ecommerce/);
-    }
+    await expect(page.getByText("Password is a required field")).toBeVisible();
   });
 });

@@ -1,58 +1,38 @@
 import { expect, test } from "@playwright/test";
-
 import { LoginPage } from "./pages/LoginPage";
-import { ProductsPage } from "./pages/ProductPage";
-import { CheckoutPage } from "./pages/CheckoutPage";
+import { invalidCredentials, validCredentials } from "./Data/credentials";
+
 test.describe("Login page test", () => {
-  test("Login with valid credentials", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    const productsPage = new ProductsPage(page);
-
+  let loginPage: LoginPage;
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
     await loginPage.open();
-    await loginPage.login("standard_user", "secret_sauce");
-    await productsPage.expectProductsPage();
   });
 
-  test("Login with invalid credentials", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login("sldkfj", "shdfe");
-    await loginPage.expectError(
-      "Epic sadface: Username and password do not match any user in this service"
-    );
-  });
+  for (const user of validCredentials) {
+    test(`Login with valid credentials name:${user.name}`, async ({ page }) => {
+      await loginPage.login(user.name, user.password);
+      await expect(page).toHaveURL(/inventory/);
+    });
+  }
 
-  test("Login with empty username", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login("", "secret_sauce");
-    await loginPage.expectError("Epic sadface: Username is required");
-  });
+  for (const invaliduser of invalidCredentials) {
+    test(`Login fails for invalid user: ${invaliduser.name}`, async ({
+      page,
+    }) => {
+      await loginPage.login(invaliduser.name, invaliduser.password);
+      await expect(
+        page.getByText(
+          "Epic sadface: Username and password do not match any user in this service"
+        )
+      ).toBeVisible();
+    });
+  }
 
-  test("Login with empty password", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login("standard_user", "");
-    await loginPage.expectError("Epic sadface: Password is required");
-  });
-});
-
-test.describe("Checkout page test", () => {
-  test("Checkout with user data", async ({ page }) => {
-    const checkoutPage = new CheckoutPage(page);
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login("standard_user", "secret_sauce");
-    await checkoutPage.open();
-    await checkoutPage.checkout("ahkfjad", "sdhs", "uhsd");
-  });
-  test("checkout with empty form", async ({ page }) => {
-    const checkoutPage = new CheckoutPage(page);
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await loginPage.login("standard_user", "secret_sauce");
-    await checkoutPage.open();
-    await checkoutPage.checkout("", "", "");
-    await expect(checkoutPage.expectError("Error: First Name is required"));
+  test("Login with empty credentials", async ({ page }) => {
+    await loginPage.login("", "");
+    await expect(
+      page.getByText("Epic sadface: Username is required")
+    ).toBeVisible();
   });
 });

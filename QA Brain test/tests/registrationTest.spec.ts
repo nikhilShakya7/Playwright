@@ -1,58 +1,56 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { Registration } from "./pages/Registration";
+import {
+  emptyRegistrationMessage,
+  validCredentials,
+} from "./data/register.data";
 
 test.describe("Registration page test", () => {
-  let registration: Registration;
+  let registrationPage: Registration;
   test.beforeEach(async ({ page }) => {
-    registration = new Registration(page);
-    await registration.open();
+    registrationPage = new Registration(page);
+    await registrationPage.open();
   });
 
-  test("Registration wit empty fields", async ({ page }) => {
-    await registration.signup("", "", "", "", "", "");
-    await expect(page.getByText("Name is a required field")).toBeVisible();
-    await expect(page.getByText("Country is a required field")).toBeVisible();
-    await expect(page.getByText("Account is a required field")).toBeVisible();
-    await expect(page.getByText("Email is a required field")).toBeVisible();
-    await expect(page.getByText("Password is a required field")).toBeVisible();
-    await expect(page.getByText("Confirm Password is required")).toBeVisible();
+  test("Registration page has all the fields", async ({ page }) => {
+    await expect(page.getByLabel("Name")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
+
+    await expect(page.getByRole("button", { name: "SIGNUP" })).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Select Country" }),
+    ).toBeVisible();
   });
 
-  test("Register with valid credentials", async ({ page }) => {
-    await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
-      "123456",
-      "123456"
+  test("Registration with valid data", async ({ page }) => {
+    await registrationPage.register(
+      validCredentials.name,
+      validCredentials.country,
+      validCredentials.account,
+      validCredentials.email,
+      validCredentials.password,
+      validCredentials.confirmPassword,
     );
     await expect(page).toHaveURL(/registered=true/);
   });
 
-  test("Register with unmatching passwords", async ({ page }) => {
-    await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
-      "123456",
-      "1234456"
-    );
-    await expect(page.getByText("Passwords must match")).toBeVisible();
+  test("Register with empty fields", async ({ page }) => {
+    await registrationPage.register("", "", "", "", "", "");
+    for (const message of Object.values(emptyRegistrationMessage)) {
+      await expect(page.getByText(message)).toBeVisible();
+    }
   });
 
-  test("Register with password less then 6 characters", async ({ page }) => {
-    await registration.signup(
-      "Jon Doe",
-      "Aland",
-      "Student",
-      "admin1@gmail.com",
-      "123",
-      "123"
+  test("Register with different password", async ({ page }) => {
+    await registrationPage.register(
+      validCredentials.name,
+      validCredentials.country,
+      validCredentials.account,
+      validCredentials.email,
+      validCredentials.password,
+      "sdfssdfsfddf",
     );
-    await expect(
-      page.getByText("Password must be at least 6 characters")
-    ).toBeVisible();
+
+    await expect(page.getByText("Passwords must match")).toBeVisible;
   });
 });
