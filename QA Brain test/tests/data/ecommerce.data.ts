@@ -3,10 +3,11 @@ export interface ecommerceData {
   password: string;
 }
 
-export const validData: ecommerceData = {
-  email: "test@qabrains.com",
-  password: "Password123",
-};
+export const validData = [
+  { email: "test@qabrains.com", password: "Password123" },
+  { email: "practice@qabrains.com", password: "Password123" },
+  { email: "student@qabrains.com", password: "Password123" },
+];
 
 export const invalidData = {
   invalidEmail: "dfg@wf.agf",

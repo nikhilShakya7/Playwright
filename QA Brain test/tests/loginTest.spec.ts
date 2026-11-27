@@ -1,52 +1,59 @@
-import test, { expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { LoginPage } from "./pages/LoginPage";
-import { Homepage } from "./pages/Homepage";
-import { EMAIL, PASSWORD } from "../utils/env";
 import { invalidCredentials, validCredentials } from "./data/login.data";
-
-test.describe("Visibility test", () => {
-  test("All fields are visible", async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.open();
-    await expect(loginPage.userEmail).toBeVisible();
-    await expect(loginPage.userPassword).toBeVisible();
-    await expect(loginPage.loginButton).toBeVisible();
-  });
-});
+import { LogoutPage } from "./pages/LogoutPage";
 
 test.describe("Login page test", () => {
   let loginPage: LoginPage;
-  let homePage: Homepage;
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
-    homePage = new Homepage(page);
     await loginPage.open();
   });
 
   test("Login with valid credentials", async ({ page }) => {
     await loginPage.login(validCredentials.email, validCredentials.password);
-    await homePage.gotoHome();
+    await expect(page).toHaveURL(/logged=true/);
   });
-  test("Login with empty email", async ({ page }) => {
+
+  test("Login with invalid credentials", async ({ page }) => {
     await loginPage.login(
-      invalidCredentials.emptyEmail,
-      invalidCredentials.emptyPassword
+      invalidCredentials.invalidEmail,
+      invalidCredentials.invalidPassword,
     );
+    await expect(
+      page.getByText("Your email and password both are invalid!"),
+    ).toBeVisible();
+  });
+
+  test("Login with empty credentials", async ({ page }) => {
+    await loginPage.login("", "");
+    await expect(page.getByText("Password is a required field")).toBeVisible();
     await expect(page.getByText("Email is a required field")).toBeVisible();
   });
-  test("Login with empty password", async ({ page }) => {
-    await loginPage.login(EMAIL, "");
-    await expect(page.getByText("Password is a required field")).toBeVisible();
+
+  test("Login with valid password and invalid email", async ({ page }) => {
+    await loginPage.login(
+      invalidCredentials.invalidEmail,
+      validCredentials.password,
+    );
+    await expect(page.getByText("Your email is invalid!")).toBeVisible();
+  });
+
+  test("Login with valid email and invalid password", async ({ page }) => {
+    await loginPage.login(
+      validCredentials.email,
+      invalidCredentials.invalidPassword,
+    );
+    await expect(page.getByText("Your password is invalid!")).toBeVisible();
   });
 });
 
-test.describe("logout test", () => {
-  test("Logout test", async ({ page }) => {
-    const loginpage = new LoginPage(page);
-    const homePage = new Homepage(page);
-    await loginpage.open();
-    await loginpage.login(EMAIL, PASSWORD);
-    await homePage.gotoHome();
-    await homePage.logout();
-  });
+test("Logout page test", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const logoutPage = new LogoutPage(page);
+
+  await loginPage.open();
+  await loginPage.login(validCredentials.email, validCredentials.password);
+  await logoutPage.logout();
+  await expect(page).toHaveURL("https://practice.qabrains.com/");
 });
